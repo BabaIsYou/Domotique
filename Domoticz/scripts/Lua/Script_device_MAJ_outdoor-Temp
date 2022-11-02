@@ -1,0 +1,35 @@
+
+--Script for updating Outdoor temp to display on Sinope, Ouellet ou Stelpro thermostats using REST-API
+--
+-- Parameters :
+WheaterStation = "Météo Montréal - THB" -- Name of the Domoticz device storing THB information
+DeconzAPIkey = "XXXXXXXXX"         -- API key used to access DeCONZ REST-API
+DeconzIP="127.0.0.1"            -- IP address of the DeCONZ REST-API server. Usually the same with port 80
+logfile="/tmp/log/"             -- Location of the log file just in case because update command is launched asynchronously
+-- List of thermostat sensors idx in DeCONZ separated with comma :
+DeconzTHidx = {"18","26","41","45"}
+
+-- Nothing to change after this line... :-)
+commandArray = {}
+
+if devicechanged[WheaterStation] then
+
+    -- Split data
+    Temperature, Humidity, Pressure = otherdevices_svalues[WheaterStation]:match("([^;]+);([^;]+)")
+    Temperature = tostring(math.floor(tonumber(Temperature)*100))
+    if uservariables['Last_Outdoor_Temp'] ~= Temperature then
+        commandArray['Variable:Last_Outdoor_Temp'] = Temperature
+        for i,THidx in ipairs(DeconzTHidx)
+--      long = strlen(Temperature,'.')-1
+--      Temperature = strsub(Temperature,1,long)
+        do
+            url = "http://".. DeconzIP .."/api/" .. DeconzAPIkey .. "/sensors/" .. THidx .. "/config"
+            commande = "curl -H 'Content-Type: application/json' -X PUT -d '{" .. '"externalsensortemp": ' .. Temperature .. "}'"
+--          print("MAJ Outdoor temp " .. commande .. " " .. url)
+           print("MAJ_outdoor-Temp - Mise à jour affichage THidx: " .. THidx .. ", valeur: " .. Temperature)
+            os.execute(commande .. " " .. url .. "> " .. logfile .. "/Script_device_MAJ_outdoor-Temp_" .. THidx .. ".log &")
+        end
+    end
+end
+
+return commandArray 
