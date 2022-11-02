@@ -1,0 +1,63 @@
+-- mercusot - 2022 -- Inspired by https://github.com/Smanar/Domoticz-deCONZ/wiki/Examples-to-use-LUA-script-for-switch
+-- Example of device script to do action depending on last selected dimmer switch.
+-- It use a 4 buttons remote but can be easily adapted to any remot with less or more buttons, just adjust 
+-- the dimmer list accordingly.
+-- Each dimmer on witch dimming action will be taken is selected prior by one tap button.
+-- The position in dim_list assigns the button.
+-- If switch has been changed since last selection, the new one is enlighted. If it's the same then it is
+-- set off and dimming value stored for later on state without loosing dimming level value.
+--
+-- Long press on button 3 is dimming up pre-selected switch, long press on button 4 is leveling down
+--
+-- String user variable LastUsedDimmer must be created to keep in "memory" the device on witch dimming 
+-- action will be applied
+--
+-- All print could be commented, they are just here to help to understand logic of the script.
+----------------------------------------------------------------------------------------------------
+commandArray = {}
+-- List of dimmer, each one is assign to a button by it's position in the list.
+dim_list = {"Gradateur_Cinema","LED plafond Cinema","LED sol Cinema","Gradateur Bureau"}
+-- Name of the triggering remote
+trig_remote = "Telecommande LoraTap"
+
+-- Test if the remote is the triggering device
+if (devicechanged[trig_remote])  then
+    local b = devicechanged[trig_remote]
+    print ("Button = "  .. b)
+    local a = string.sub(b,1,1)
+    print ("Action = " .. a)
+    local dimmer = uservariables['LastUsedDimmer']
+    
+    if (a == 'B') then
+        if dimmer ~= dim_list[tonumber(string.sub(b,2))] then
+            dimmer = dim_list[tonumber(string.sub(b,2))]
+            print ('Changing device to '..dimmer)
+            commandArray['Variable:LastUsedDimmer'] = dimmer
+        end
+        print (dimmer .. " state : " .. otherdevices[dimmer])
+		if (otherdevices[dimmer] ~= 'Off') then
+		    print ("switching " .. dimmer .. " Off")
+			 commandArray[dimmer] = 'Off'
+			 local cmd = string.format("%d|0|%d", otherdevices_idx[dimmer],tonumber(otherdevices_svalues[dimmer])) -- keeping dimming value
+             table.insert (commandArray, { ['UpdateDevice'] = cmd } )
+		else
+		     print ("switching " .. dimmer .. " On")
+			 commandArray[dimmer] = 'On'
+		end
+    elseif (b == 'L3') then
+        l = otherdevices_svalues[dimmer]
+        l = tonumber(l) + 5
+        l = math.min(l,100) -- no more than 100%
+        print ("Level up to " .. l)
+        commandArray[dimmer] = 'Set Level: '..l
+    elseif (b == 'L4') then
+        l = otherdevices_svalues[dimmer]
+        l = tonumber(l) - 5
+        l = math.max(l,0) -- not less than 0%
+        print ("Level down to " .. l)
+        commandArray[dimmer] = 'Set Level: '..l
+	end
+
+end
+
+return commandArray
