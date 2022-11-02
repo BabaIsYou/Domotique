@@ -1,0 +1,15 @@
+-- Website: https://domo.easter.fr/2017/06/26/kodi-lumieres-tv-et-domoticz/
+commandArray = {}
+    if (devicechanged['Kodi Cinema_maison'] == 'Video' or devicechanged['Kodi Cinema_maison_wifi'] == 'Video') then
+        commandArray['Gradateur_Cinema']='Off'
+        commandArray['Scene:Eteindre LED cinema (bt3Long)']='On'
+--        commandArray['Éteindre LED cinema (bt3 long)']='On'
+    elseif (devicechanged['Kodi Cinema_maison'] == 'Paused' or devicechanged['Kodi Cinema_maison_wifi'] == 'Paused')  then
+--        commandArray['MiBoxer Gateway']='Set Level 12'
+         commandArray['Scene:Eclairage Pause Cinema']='On'
+--        commandArray['Scene:Allumer LED cinema (bt3)']='On'
+    elseif (devicechanged['Kodi Cinema_maison'] == 'On' or devicechanged['Kodi Cinema_maison_wifi'] == 'On')  then
+--        commandArray['Gradateur_Cinema']='Set Level 35'
+         commandArray['Scene:Personne dans salle cinema']='On'
+    end
+return commandArray
