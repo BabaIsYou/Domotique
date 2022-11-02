@@ -1,0 +1,32 @@
+-- Call z-wave jamming check python from this Lua time script,
+-- and update jamming virtual switch if needed...
+-- NEEDS checkZwJam.py python script.
+--
+-- Changelog : YL 21/01/2017, 1st version.
+
+-- User config editable settings :
+chkZwPyPath  = '/home/pi/domoticz/scripts/python'
+devJamSwitch = 'JamZwave' -- vSwitch showing jamming name.
+devJamIdx    = '563'      -- vSwitch IDx (both must match).
+devJamCheck  = 'Sirene_Cinema'    -- Z-Wave device in poll mode used for checks.
+jamMissLimit = '2'        -- Nb of consecutive polls miss limit.
+devCtlIdx    = '9'      -- Z-Wave controler IDx.
+
+commandArray = {}
+
+-- Debug, to show otherdevices & valid command statuses used hereunder...
+--for i, v in pairs(otherdevices) do print(i, v) end
+
+-- Need to pass current status to python because messy Lua os.execute does not properly handle return values...
+if (otherdevices[devJamSwitch] == 'On') then
+  jamStatus='1'
+else
+  jamStatus='0'
+end
+
+-- Build command (in background, to avoid Lua/Domoticz lock-up)
+cmd = chkZwPyPath..'checkZwJam.py -c'..devCtlIdx..' -j'..devJamIdx..' -n'..devJamCheck..' -m'..jamMissLimit..' -s'..jamStatus..' &'
+--print(cmd)
+os.execute(cmd)
+
+return commandArray
