@@ -1,0 +1,24 @@
+--
+-- Script utilisé lorsque le device Prise Rideau salon est mis On ou Off
+-- Si c'est bien les rideaux qui l'ont déclenché alors voir si la prise de commande des rideaux est on
+-- Si oui alors on l'arrete pour 3 sec (pour changer le sens du moteur des rideaux)
+-- Dans tous les cas on met la prise qui alimente les rideaux à On après 2 secondes (pour ne pas 
+-- la mettre On avant un changements de sens du moteur).
+-- (elle passe Off automatiquement au bout de 20s dans sa configuration au niveau de Domoticz.
+-- ce qui suffit pour ouvrir ou fermer les rideaux)
+--
+ commandArray = {}
+ -- loop through all the changed devices
+for deviceName,deviceValue in pairs(devicechanged) do
+ --   print ("Device based event fired on '"..deviceName.."', value '"..tostring(deviceValue).."'");
+    if (deviceName=='Rideaux salon' and (devicechanged[deviceName] ~= uservariables['Rideaux-Status'])) then
+        if otherdevices['Prise rideaux salon'] == "On" then
+            print("Arrêt prise moteur rideaux pour 3 secondes pour changer de sens")
+            commandArray['Prise rideaux salon'] = "Off FOR 3 SECONDS"
+        end
+            print("Allumage de la prise moteur rideaux pour 20 secondes")
+            commandArray[#commandArray + 1]={['Prise rideaux salon'] = "On FOR 20 SECONDS"}
+            print ('Mise à jour de la variable de status des rideaux du salon ' .. devicechanged[deviceName])
+            commandArray[#commandArray + 1]={['Variable:Rideaux-Status'] = devicechanged[deviceName]}
+   end
+end
