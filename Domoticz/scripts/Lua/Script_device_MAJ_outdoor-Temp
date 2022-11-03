@@ -1,5 +1,6 @@
 
 --Script for updating Outdoor temp to display on Sinope, Ouellet ou Stelpro thermostats using REST-API
+-- use uservariable Last_Outdoor_Temp to assure that update is based on temperature change and not humidity or pressure.
 --
 -- Parameters :
 WheaterStation = "Météo Montréal - THB" -- Name of the Domoticz device storing THB information
@@ -20,8 +21,6 @@ if devicechanged[WheaterStation] then
     if uservariables['Last_Outdoor_Temp'] ~= Temperature then
         commandArray['Variable:Last_Outdoor_Temp'] = Temperature
         for i,THidx in ipairs(DeconzTHidx)
---      long = strlen(Temperature,'.')-1
---      Temperature = strsub(Temperature,1,long)
         do
             url = "http://".. DeconzIP .."/api/" .. DeconzAPIkey .. "/sensors/" .. THidx .. "/config"
             commande = "curl -H 'Content-Type: application/json' -X PUT -d '{" .. '"externalsensortemp": ' .. Temperature .. "}'"
