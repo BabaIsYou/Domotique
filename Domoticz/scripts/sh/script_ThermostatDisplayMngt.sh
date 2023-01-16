@@ -15,7 +15,7 @@
 [[ -z "$3" ]] && { echo "Parameter 3 is empty" ; exit 1; }
 
 # User defined vars
-DeconzAPIkey="54078E3871"       # API key used to access DeCONZ REST-API
+DeconzAPIkey="XXXXXXXXXX"       # API key used to access DeCONZ REST-API
 DeconzIP="127.0.0.1"            # IP address of the DeCONZ REST-API server. Usually the same with port 80
 domoticz_url="127.0.0.1:8084"   # eg 127.0.0.1:8080
 
