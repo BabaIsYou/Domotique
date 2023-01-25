@@ -23,7 +23,7 @@ return {
 
     execute = function(dz)
         -- =======================  Settings below this line =================
-        local email               = true                        -- set to false if you don't want an Email when something wrong with database
+        local email               = false                        -- set to false if you don't want an Email when something wrong with database
         local notify              = true                        -- set to false if you don't want a notification when something wrong with database
         local afterSuccessCommand = false        -- set to full qualified path of your followUp script or false if you don't need a followUp after success
         local afterFailCommand    = false                       -- set to full qualified path of your followUp script or false if you don't need a followUp after fail
@@ -38,7 +38,7 @@ return {
                       }
                       
         local subject             = "Maison - DeConz database check"   -- Free text
-        local emailaddress        = "hugues.mercusot@gmail.com"        -- Your Email address
+        local emailaddress        = "xxxxxx@gmail.com"        -- Your Email address
         local path                = "/home/pi/.local/share/dresden-elektronik/deCONZ/"            -- full qualified path to your database 
         local database            = "zll.db"               -- database filename + extension
         -- local database         = "corrupt.db"                -- test database filename + extension
