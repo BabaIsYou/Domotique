@@ -25,7 +25,7 @@ if [ ! -z $2 ]; then
 fi
 
 FILE="$db_path/$db_file-backup.db"
-echo "$FILE"
+#echo "$FILE"
 if [[ -f "$FILE" ]]; then
     echo "=» Removing $FILE"
     rm -f $FILE
@@ -33,7 +33,7 @@ fi
 
 echo "=» Backup of $db_path/$db_file.db to $FILE"
 sql_cmd="VACUUM main INTO '$FILE';"
-echo $sql_cmd
+#echo $sql_cmd
 sqlite3 $db_path/$db_file.db "$sql_cmd"
 
 if [ "$backup_path" != "$db_path" ]; then 
