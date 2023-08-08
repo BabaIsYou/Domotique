@@ -42,7 +42,7 @@ return {
                 end
 
                 if (message ~= "---") then
-                        domoticz.email('Sonde(s) morte(s) !', message, 'hugues.mercusot@gmail.com')
+                        domoticz.email('Sonde(s) morte(s) !', message, 'xxxxxx@gmail.com')
                         domoticz.log('Sonde(s) morte(s): ' .. message, domoticz.LOG_ERROR)
                 end
         end
