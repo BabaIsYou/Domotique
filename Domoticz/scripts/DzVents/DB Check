@@ -46,7 +46,7 @@ return {
                       }
                       
         local subject             = "Maison - Domoticz database check"   -- Free text
-        local emailaddress        = "hugues.mercusot@gmail.com"        -- Your Email address
+        local emailaddress        = "xxxxx@gmail.com"        -- Your Email address
         local path                = "/home/pi/domoticz/"            -- full qualified path to your database 
         local database            = "domoticz.db"               -- database filename + extension
         -- local database         = "corrupt.db"                -- test database filename + extension
