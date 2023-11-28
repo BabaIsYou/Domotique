@@ -108,6 +108,7 @@ return {
                                          [24] = "Not used",
                                          [25] = "2nd parameter to sqlite3_bind out of range",
                                          [26] = "File opened that is not a database file",
+                                         [27] = "Existing sensors that does not exist in devices table"
                                      }
             return(errorMessages[rc] or "Unknown error")
         end
@@ -116,32 +117,40 @@ return {
             os.execute('sudo ' .. cmd ..' &')
         end
 
-        local function osExecute(base,check)
+        local function osExecute(commandOutput,base,check)
             local fileHandle     = assert(io.popen(base .. check, 'r'))
             local commandOutput  = assert(fileHandle:read('*a'))
             local returnTable    = {fileHandle:close()}
             check = check:gsub("'","") .." result ==>> " ..  ( returnTable[3] ~= 0 and "Failed: " .. rc2Text(returnTable[3]) .. commandOutput .. " (".. returnTable[3] .. ")" or true and "OK" )
             logWrite("Command " .. check )
-            return check,returnTable[3]            -- rc[3] contains returnCode
+            return commandOutput,check,returnTable[3]            -- rc[3] contains returnCode
         end
+        
+      	local function checkDatabase()
+			if dz.utils.fileExists(path .. database) then
+				if dz.utils.fileExists(sqlite) then
+					local firstCheck = checks[1]
+					local CmdOutput, result, rc = osExecute(CmdOutput, baseCommand, firstCheck)
+					local commandOutputValue = tonumber(CmdOutput:match("(%d+)"))
+					if commandOutputValue > 0 then
+						return 27, result
+					end
 
-        local function checkDatabase()
-            if dz.utils.fileExists(path .. database) then
-                if dz.utils.fileExists(sqlite) then
-                    for _,check in ipairs (checks) do
-                        local result,rc = osExecute(baseCommand,check)
-                        if rc ~= 0 then 
-                            return rc, result  
-                        end
-                    end
-                else
-                    return -1,"sqlite3 not installed"
-                end
-            else
-                return -1,"wrong path to database"
-            end
-            return 0
-        end
+					for i = 2, #checks do
+						local check = checks[i]
+						local CmdOutput, result, rc = osExecute(CmdOutput, baseCommand, check)
+						if rc ~= 0 then
+							return rc, result
+						end
+					end
+				else
+					return -1, "sqlite3 not installed"
+				end
+			else
+				return -1, "wrong path to database"
+			end
+			return 0
+		end  
 
         local function updateAlert(rc)
             if alert and alert.active then
@@ -169,4 +178,3 @@ return {
         updateAlert(rc) 
     end
 }
-
