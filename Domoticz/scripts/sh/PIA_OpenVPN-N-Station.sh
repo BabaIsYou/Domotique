@@ -36,10 +36,10 @@
         echo "VPN status already On in Domoticz"
 	elif [ $DOMOTICZ_STATUS == "Off" ] && [ $VPN_STATUS == "Off" ]
 	then
-		echo ""VPN status already Down in Domoticz""
+		echo "VPN status already Down in Domoticz"
 	else
 		echo "Updating PIA_OpenVPN virtual switch in Domoticz"
-		curl -s -i -H "Accept: application/json" "http://$DOMO_IP:$DOMO_PORT/json.htm?type=command&param=switchlight&idx=$VPN_IDX&switchcmd=On"
+		curl -s -i -H "Accept: application/json" "http://$DOMO_IP:$DOMO_PORT/json.htm?type=command&param=switchlight&idx=$VPN_IDX&switchcmd=$VPN_STATUS"
 	fi
 	else
         echo "Domoticz isn't up on $DOMO_IP ?!"
